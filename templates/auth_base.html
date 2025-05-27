@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Login{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            height: 100vh; /* Set the height to 100% of the viewport height */
+            margin: 0; /* Ensure no default margin */
+            background: url("{{ url_for('static', filename='maize.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .login-page-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%; /* Full height of the body */
+        }
+        .auth-container {
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page-container">
+        <div class="auth-container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

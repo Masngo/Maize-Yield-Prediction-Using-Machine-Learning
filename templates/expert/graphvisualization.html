@@ -1,0 +1,25 @@
+<!-- resources/views/layouts/app.blade.php -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@yield('title')</title>
+    <!-- Add your stylesheets and scripts here -->
+</head>
+<body>
+    <div class="container">
+        @if(Auth::check())
+            <nav>
+                <ul>
+                    <li><a href="{{ route('profile.show') }}">Profile</a></li>
+                    @if(Auth::user()->role == 'admin')
+                        <li><a href="{{ route('admin.users.index') }}">Manage Users</a></li>
+                    @endif
+                </ul>
+            </nav>
+        @endif
+
+        @yield('content')
+    </div>
+</body>
+</html>

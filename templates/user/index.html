@@ -1,0 +1,41 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-content">
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <p>This is the user dashboard.</p>
+    <div class="form-container">
+        <h2 class="ad-head">Maize Yield Prediction</h2>
+        <form id="predict-form">
+            <div class="form-group">
+                <label for="Year">Year:</label>
+                <input type="number" id="Year" name="Year" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="Average_Rainfall_mm_per_year">Average Rainfall (mm/year):</label>
+                <input type="number" id="Average_Rainfall_mm_per_year" name="Average_Rainfall_mm_per_year" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="Pesticides_Tonnes">Pesticides (Tonnes):</label>
+                <input type="number" id="Pesticides_Tonnes" name="Pesticides_Tonnes" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="Avg_Temp">Average Temperature (°C):</label>
+                <input type="number" id="Avg_Temp" name="Avg_Temp" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="Area">Area:</label>
+                <select id="Area" name="Area" class="form-control">
+                    <option value="Area_Bindura">Area_Bindura</option>
+                    <option value="Area_Centenary">Area_Centenary</option>
+                    <option value="Area_Chikomba">Area_Chikomba</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+        <div id="prediction-result" class="alert alert-success"></div>
+    </div>
+</div>
+{% endblock %}
