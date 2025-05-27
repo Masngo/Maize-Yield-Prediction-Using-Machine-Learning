@@ -1,4 +1,4 @@
-# Maize-Yield-Prediction-Using-Machine-Learning
+why# Maize-Yield-Prediction-Using-Machine-Learning
 This project focuses on developing a predictive model to estimate maize yield in Zimbabwe using machine learning techniques. Agriculture is a vital part of Zimbabwe’s economy, and maize is one of its staple crops. The main objective of this project is to leverage data-driven methods to provide more reliable yield predictions.
 
 Maize Yield Prediction Using Machine Learning
@@ -32,3 +32,48 @@ Algorithms Used:
   - Average temperature  
   - Fertilizer usage  
   - Soil pH level
+- Farming Districts in Zimbabwe
+  - Pest incidence  
+  - Maize yield (target variable)
+
+⚙️ How to Use
+
+1. *Clone the Repository*
+   bash
+   git clone https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning.git
+cd Maize-Yield-Prediction-Using-Machine-Learning
+   
+
+2. *Install Requirements*
+   bash
+   pip install -r requirements.txt
+   
+
+3. *Run the Script*
+   bash
+   python app.py
+   
+
+🔍 Project Structure
+
+maize-yield-prediction/
+├── data/                      # CSV datasets
+├── notebooks/                 # Jupyter analysis notebooks
+├── src/                       # Python scripts (data cleaning, model training)
+│   └── model.py
+│   └── preprocess.py
+├── main.py                    # Entry point for training/testing
+├── requirements.txt
+└── README.md
+
+✅ Results
+- Random Forest Regression gave the highest accuracy with an R² score of *0.89*.
+- Decision Tree and Linear Regression also performed reasonably but with higher error margins.
+- Lasso helped in reducing overfitting by selecting relevant features.
+
+🔁 Future Improvements
+- Integrate real-time weather APIs for dynamic predictions.
+- Deploy the model using Flask or Streamlit for farmers' use.
+- Include satellite imagery data for improved spatial accuracy.
+
+🙏 Acknowledgements
