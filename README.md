@@ -1,4 +1,4 @@
-why# Maize-Yield-Prediction-Using-Machine-Learning
+# Maize-Yield-Prediction-Using-Machine-Learning
 This project focuses on developing a predictive model to estimate maize yield in Zimbabwe using machine learning techniques. Agriculture is a vital part of Zimbabwe’s economy, and maize is one of its staple crops. The main objective of this project is to leverage data-driven methods to provide more reliable yield predictions.
 
 Maize Yield Prediction Using Machine Learning
@@ -42,7 +42,6 @@ Algorithms Used:
    bash
    git clone https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning.git
 cd Maize-Yield-Prediction-Using-Machine-Learning
-   
 
 2. *Install Requirements*
    bash
@@ -77,3 +76,5 @@ maize-yield-prediction/
 - Include satellite imagery data for improved spatial accuracy.
 
 🙏 Acknowledgements
+
+Thanks to Zimbabwe’s Ministry of Agriculture, weather services that is Meteorological Services Department of Zimbabwe (MSD) and open data contributors for access to essential data.
