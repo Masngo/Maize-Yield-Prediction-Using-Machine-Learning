@@ -31,7 +31,8 @@ Algorithms Used:
   - Average temperature  
   - Fertilizer usage  
   - Soil pH level
-- Farming Districts in Zimbabwe  
+  - Farming Districts in Zimbabwe
+  - Pesticide 
   - Maize yield (target variable)
 
 ⚙️ How to Use
