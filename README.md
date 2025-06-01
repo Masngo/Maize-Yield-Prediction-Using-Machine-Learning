@@ -7,10 +7,9 @@ Maize Yield Prediction Using Machine Learning
 This project aims to build a predictive system for estimating maize crop yields in Zimbabwe using historical agricultural and climatic data. It uses supervised machine learning algorithms to analyze and predict maize yield based on various factors such as rainfall, temperature, soil quality, and fertilizer use.
 
 🎯 Objectives
-- Predict maize yield using machine learning models.
-- Evaluate model performance using appropriate metrics (R² Score, RMSE, MAE).
-- Help farmers and policymakers in Zimbabwe make informed agricultural decisions.
-- Promote the use of data science in precision agriculture.
+- To enhance the accuracy of maize yield prediction by leveraging machine learning algorithms and techniques.
+- To evaluate model performance using appropriate metrics (R² Score, RMSE, MAE).
+- To help farmers and policymakers in Zimbabwe make informed agricultural decisions.
 
 🧰 Technologies & Tools Used
 - *Programming Language*: Python  
@@ -32,8 +31,8 @@ Algorithms Used:
   - Average temperature  
   - Fertilizer usage  
   - Soil pH level
-- Farming Districts in Zimbabwe
-  - Pest incidence  
+  - Farming Districts in Zimbabwe
+  - Pesticide 
   - Maize yield (target variable)
 
 ⚙️ How to Use
@@ -47,12 +46,10 @@ cd Maize-Yield-Prediction-Using-Machine-Learning
    bash
    pip install -r requirements.txt
    
-
 3. *Run the Script*
    bash
    python app.py
    
-
 🔍 Project Structure
 
 maize-yield-prediction/
@@ -63,7 +60,7 @@ maize-yield-prediction/
 │   └── preprocess.py
 ├── main.py                    # Entry point for training/testing
 ├── requirements.txt
-└── README.md
+└── README.me
 
 ✅ Results
 - Random Forest Regression gave the highest accuracy with an R² score of *0.89*.
