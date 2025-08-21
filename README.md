@@ -77,24 +77,27 @@ maize-yield-prediction/
   
 # Screenshots
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/welcome%20user.jpg
+![welcome user](https://github.com/user-attachments/assets/f83ef678-7d5d-4a90-84f7-de6bd646b769)
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/Admin%20validation.PNG 
+![admin dashboard](https://github.com/user-attachments/assets/3a65db2d-e3ac-407d-b24d-716b9624df56)
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/admin%20dashboard.jpg
+<img width="1343" height="751" alt="admin add user" src="https://github.com/user-attachments/assets/0e85fc59-3618-4112-9f7c-46079944b2ea" /> 
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/GUI-%20login.PNG
+<img width="1348" height="759" alt="Admin validation" src="https://github.com/user-attachments/assets/36278f45-19f0-498e-b775-605713562547" /> 
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/correlation%20heatmap.PNG 
+<img width="1343" height="637" alt="maize distribution1" src="https://github.com/user-attachments/assets/d18056f4-cc46-403e-bf73-e93f7d0d7c6f" />
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/maize%20distribution.PNG
+<img width="1248" height="589" alt="pesticide 1" src="https://github.com/user-attachments/assets/c4afea8c-7fd6-49c6-a45a-fc6a48af23df" /> 
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/pesticides.PNG 
+<img width="1339" height="658" alt="yield pesticides" src="https://github.com/user-attachments/assets/9bd372f1-ca28-4ebd-8c68-ec15dab33eb3" />
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/trend%20and%20years.PNG
+<img width="1338" height="663" alt="trend and years" src="https://github.com/user-attachments/assets/fb3f0a91-698c-49ff-9410-b3cdf39e504d" />   
 
-https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/yield%20pesticides.PNG
+<img width="1313" height="582" alt="temperature" src="https://github.com/user-attachments/assets/aec41fd4-0be0-4f36-a915-868a48b0b3f8" />
 
+<img width="1237" height="588" alt="time" src="https://github.com/user-attachments/assets/b31432bb-f55a-475c-a2d7-d8810ea3e762" />
+
+<img width="1351" height="699" alt="correlation heatmap" src="https://github.com/user-attachments/assets/f8ddda19-d841-419b-9780-638fd6810900" />
 
 
 
