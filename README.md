@@ -53,19 +53,50 @@ cd Maize-Yield-Prediction-Using-Machine-Learning
 🔍 Project Structure
 
 maize-yield-prediction/
+
 ├── data/                      # CSV datasets
+
 ├── notebooks/                 # Jupyter analysis notebooks
+
 ├── src/                       # Python scripts (data cleaning, model training)
+
 │   └── model.py
+
 │   └── preprocess.py
+
 ├── main.py                    # Entry point for training/testing
+
 ├── requirements.txt
+
 └── README.me
 
 ✅ Results
 - Random Forest Regression gave the highest accuracy with an R² score of *0.89*.
 - Decision Tree and Linear Regression also performed reasonably but with higher error margins.
 - Lasso helped in reducing overfitting by selecting relevant features.
+  
+# Screenshots
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/welcome%20user.jpg
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/Admin%20validation.PNG 
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/admin%20dashboard.jpg
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/GUI-%20login.PNG
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/correlation%20heatmap.PNG 
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/maize%20distribution.PNG
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/pesticides.PNG 
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/trend%20and%20years.PNG
+
+https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/blob/main/screenshots/yield%20pesticides.PNG
+
+
+
 
 🔁 Future Improvements
 - Integrate real-time weather APIs for dynamic predictions.
