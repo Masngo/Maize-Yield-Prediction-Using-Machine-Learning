@@ -101,6 +101,7 @@ maize-yield-prediction/
 
 
 
+
 🔁 Future Improvements
 - Integrate real-time weather APIs for dynamic predictions.
 - Deploy the model using Flask or Streamlit for farmers' use.
