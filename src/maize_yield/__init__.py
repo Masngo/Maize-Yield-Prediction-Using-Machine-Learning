@@ -45,9 +45,29 @@ def create_app(config: dict | None = None) -> Flask:
         from . import models  # noqa: F401  (register tables)
 
         db.create_all()
+        _bootstrap_admin(app)
 
     _register_cli(app)
     return app
+
+
+def _bootstrap_admin(app: Flask) -> None:
+    """Create the admin named by ADMIN_USERNAME/ADMIN_PASSWORD if it is missing."""
+    from .models import User
+
+    username, password = app.config.get("ADMIN_USERNAME"), app.config.get("ADMIN_PASSWORD")
+    if not username or not password:
+        return
+    if len(password) < 8:
+        app.logger.warning("ADMIN_PASSWORD is shorter than 8 characters; admin not created.")
+        return
+    if User.query.filter_by(username=username).first():
+        return
+    admin = User(username=username, role="Admin")
+    admin.set_password(password)
+    db.session.add(admin)
+    db.session.commit()
+    app.logger.info("Created admin user '%s'.", username)
 
 
 def _register_cli(app: Flask) -> None:

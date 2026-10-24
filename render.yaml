@@ -1,0 +1,19 @@
+# Render Blueprint: New + > Blueprint, then pick this repo.
+services:
+  - type: web
+    name: maize-yield
+    runtime: docker
+    plan: free
+    healthCheckPath: /login
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "1"
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false        # you will be asked for this in the Render dashboard
+      # Optional: paste a Render Postgres "Internal Database URL" here to keep users across restarts.
+      # - key: DATABASE_URL
+      #   sync: false

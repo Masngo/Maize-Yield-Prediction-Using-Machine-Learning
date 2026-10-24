@@ -40,6 +40,14 @@ docker build -t maize-yield .
 docker run -p 8000:8000 -e SECRET_KEY=$(python -c "import secrets; print(secrets.token_hex(32))") maize-yield
 ```
 
+## Deploy to Render (free)
+
+1. Push this repo to GitHub, then in Render choose **New + > Blueprint** and select it (it reads `render.yaml`).
+2. When asked, enter an `ADMIN_PASSWORD` (8+ characters). The `admin` account is created automatically on startup.
+3. Open the `https://...onrender.com/login` URL Render gives you.
+
+Free-tier caveats: the service sleeps after ~15 minutes idle (first visit then takes about a minute), and its disk is wiped on restart, so with the default SQLite database only the admin account survives. To keep users and predictions, create a Postgres database on Render and set `DATABASE_URL` to its *Internal Database URL* (free Postgres expires after roughly 30 days; check Render's current terms).
+
 ## Project layout
 
 ```
