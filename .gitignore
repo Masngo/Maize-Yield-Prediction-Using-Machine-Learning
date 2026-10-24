@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# App state / secrets
+.env
+instance/
+*.db
+models/*.joblib
+models/*.json
+*.pkl

@@ -1,0 +1,37 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Expert Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-content">
+    <h2 class="ad-head">Expert Dashboard</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User Name</th>
+                <th>Year</th>
+                <th>Average Rainfall</th>
+                <th>Pesticides</th>
+                <th>Avg Temp</th>
+                <th>Area</th>
+                <th>Predicted Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prediction in predictions %}
+            <tr>
+                <td>{{ prediction.id }}</td>
+                <td>{{ prediction.user_name }}</td>
+                <td>{{ prediction.year }}</td>
+                <td>{{ prediction.average_rainfall }}</td>
+                <td>{{ prediction.pesticides_tonnes }}</td>
+                <td>{{ prediction.avg_temp }}</td>
+                <td>{{ prediction.area }}</td>
+                <td>{{ prediction.predicted_value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Create User{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Create User</h2>
+    <form action="{{ url_for('main.create_user') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select name="role" id="role" class="form-control">
+                <option value="Admin">Admin</option>
+                <option value="Expert">Expert</option>
+                <option value="User">User</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
