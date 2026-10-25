@@ -37,5 +37,40 @@
         </form>
         <div id="prediction-result" class="alert alert-success" role="status" aria-live="polite" style="display:none"></div>
     </div>
+
+    <div id="user-charts" data-endpoint="{{ url_for('main.api_my_stats') }}" style="display:none">
+        <h3 class="section-head">Your predictions</h3>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Latest prediction vs district average</h3>
+                <div class="gauge-wrap">
+                    <div class="chart-box gauge-box"><canvas id="chart-my-gauge" aria-label="Gauge of your latest prediction as a percentage of the district's historical average" role="img"></canvas></div>
+                    <div class="gauge-label"><span id="my-gauge-value">&ndash;</span><small id="my-gauge-note"></small></div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Rainfall vs your predicted yield</h3>
+                <div class="chart-box"><canvas id="chart-my-scatter" aria-label="Scatter plot of rainfall against your predicted yield" role="img"></canvas></div>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Your predictions vs district historical average (t/ha)</h3>
+                <div class="chart-box"><canvas id="chart-compare" aria-label="Bar chart comparing your predictions with historical averages" role="img"></canvas></div>
+                <p class="chart-note">Historical average = mean yield recorded for that district in the training data.</p>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Your predicted yield over time (t/ha)</h3>
+                <div class="chart-box"><canvas id="chart-my-trend" aria-label="Line chart of your latest predictions" role="img"></canvas></div>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Your predictions by district</h3>
+                <div class="chart-box"><canvas id="chart-mine" aria-label="Pie chart of your predictions by district" role="img"></canvas></div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
 {% endblock %}

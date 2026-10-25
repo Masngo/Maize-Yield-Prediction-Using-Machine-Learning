@@ -3,35 +3,145 @@
 {% block title %}Expert Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-content">
+<div class="dashboard-content" id="expert-dashboard" data-endpoint="{{ url_for('main.api_stats') }}">
     <h2 class="ad-head">Expert Dashboard</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>User Name</th>
-                <th>Year</th>
-                <th>Average Rainfall</th>
-                <th>Pesticides</th>
-                <th>Avg Temp</th>
-                <th>Area</th>
-                <th>Predicted Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for prediction in predictions %}
-            <tr>
-                <td>{{ prediction.id }}</td>
-                <td>{{ prediction.user_name }}</td>
-                <td>{{ prediction.year }}</td>
-                <td>{{ prediction.average_rainfall }}</td>
-                <td>{{ prediction.pesticides_tonnes }}</td>
-                <td>{{ prediction.avg_temp }}</td>
-                <td>{{ prediction.area }}</td>
-                <td>{{ prediction.predicted_value }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <p class="live-status" id="live-status" role="status">Connecting&hellip;</p>
+    <nav class="section-nav" aria-label="Dashboard sections">
+        <a href="#overview">Overview</a><a href="#analysis">Analysis</a><a href="#live">Live activity</a><a href="#table">Table</a>
+    </nav>
+
+    <section id="overview">
+        <div class="stat-cards">
+            <div class="stat-card"><span class="stat-label">Total predictions</span><span class="stat-value" id="stat-total">&ndash;</span></div>
+            <div class="stat-card"><span class="stat-label">Average predicted yield</span><span class="stat-value" id="stat-average">&ndash;</span></div>
+            <div class="stat-card"><span class="stat-label">Most requested district</span><span class="stat-value" id="stat-top">&ndash;</span></div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Predicted vs historical yield</h3>
+                <div class="gauge-wrap">
+                    <div class="chart-box gauge-box"><canvas id="chart-gauge" aria-label="Gauge of average predicted yield as a percentage of the historical average" role="img"></canvas></div>
+                    <div class="gauge-label"><span id="gauge-value">&ndash;</span><small>of the historical average for the same districts</small></div>
+                </div>
+                <p class="chart-note">Green = within 15% of history; gold = further away.</p>
+            </div>
+            <div class="chart-card">
+                <h3>Predictions by district</h3>
+                <div class="chart-box"><canvas id="chart-share" aria-label="Pie chart of predictions by district" role="img"></canvas></div>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Average predicted yield (t/ha)</h3>
+                <div class="chart-box"><canvas id="chart-average" aria-label="Bar chart of average predicted yield by district" role="img"></canvas></div>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Latest 20 predictions (t/ha)</h3>
+                <div class="chart-box"><canvas id="chart-trend" aria-label="Line chart of the latest predictions" role="img"></canvas></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="analysis">
+        <h3 class="section-head">Deeper analysis</h3>
+        <div class="chart-grid">
+            <div class="chart-card chart-wide">
+                <h3>District heat map &ndash; average predicted yield (t/ha)</h3>
+                <div id="heatmap" class="heatmap" aria-label="Heat map of average predicted yield by district"></div>
+                <p class="chart-note">Darker green = higher average predicted yield. Grey = no predictions yet. Numbers show how many predictions.</p>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Predicted vs historical average yield by district (t/ha)</h3>
+                <div class="chart-box"><canvas id="chart-vs-history" aria-label="Grouped bar chart of predicted versus historical average yield" role="img"></canvas></div>
+                <p class="chart-note">Historical average = mean yield recorded for that district in the training data.</p>
+            </div>
+            <div class="chart-card">
+                <h3>District profile (radar, t/ha)</h3>
+                <div class="chart-box"><canvas id="chart-radar" aria-label="Radar chart comparing predicted and historical yield for the most requested districts" role="img"></canvas></div>
+                <p class="chart-note">Top 8 most requested districts.</p>
+            </div>
+            <div class="chart-card">
+                <h3>Predictions by input year</h3>
+                <div class="chart-box"><canvas id="chart-years" aria-label="Bar chart of predictions by the year entered" role="img"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>Yield distribution</h3>
+                <div class="chart-box"><canvas id="chart-histogram" aria-label="Histogram of predicted yields" role="img"></canvas></div>
+                <p class="chart-note">Predictions per 1 t/ha band (latest 200).</p>
+            </div>
+            <div class="chart-card">
+                <h3>Predictions per user</h3>
+                <div class="chart-box"><canvas id="chart-users" aria-label="Bar chart of predictions per user" role="img"></canvas></div>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>
+                    Predicted yield vs
+                    <select id="scatter-x" class="inline-select" aria-label="Input to plot against predicted yield">
+                        <option value="rainfall">rainfall (mm/year)</option>
+                        <option value="temp">temperature (&deg;C)</option>
+                        <option value="pesticides">pesticides (tonnes)</option>
+                    </select>
+                </h3>
+                <div class="chart-box"><canvas id="chart-scatter" aria-label="Scatter plot of predicted yield against an input" role="img"></canvas></div>
+                <p class="chart-note">Each dot is one prediction (latest 200). Hover to see the district.</p>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Rainfall &times; temperature &times; yield (bubble size = predicted yield)</h3>
+                <div class="chart-box"><canvas id="chart-bubble" aria-label="Bubble chart of rainfall and temperature sized by predicted yield" role="img"></canvas></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="live">
+        <h3 class="section-head">Live activity</h3>
+        <div class="chart-grid">
+            <div class="chart-card chart-wide">
+                <h3>Predictions received while this page is open: <span id="session-new">0</span></h3>
+                <div class="chart-box chart-short"><canvas id="chart-session" aria-label="Live line chart of total predictions during this session" role="img"></canvas></div>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Latest predictions</h3>
+                <ul id="feed" class="feed" aria-live="polite"></ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="table">
+        <h3 class="section-head">Latest 50 predictions</h3>
+        <div class="table-scroll">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Name</th>
+                    <th>Year</th>
+                    <th>Average Rainfall</th>
+                    <th>Pesticides</th>
+                    <th>Avg Temp</th>
+                    <th>Area</th>
+                    <th>Predicted (hg/ha)</th>
+                </tr>
+            </thead>
+            <tbody id="predictions-body">
+                {% for prediction in predictions %}
+                <tr>
+                    <td>{{ prediction.id }}</td>
+                    <td>{{ prediction.user_name }}</td>
+                    <td>{{ prediction.year }}</td>
+                    <td>{{ prediction.average_rainfall }}</td>
+                    <td>{{ prediction.pesticides_tonnes }}</td>
+                    <td>{{ prediction.avg_temp }}</td>
+                    <td>{{ prediction.area }}</td>
+                    <td>{{ "{:,.0f}".format(prediction.predicted_value) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
 {% endblock %}

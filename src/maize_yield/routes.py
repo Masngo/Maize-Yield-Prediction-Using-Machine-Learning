@@ -14,6 +14,7 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_required, login_user, logout_user
+from sqlalchemy import func
 
 from .extensions import db
 from .models import ROLES, Prediction, User
@@ -76,7 +77,119 @@ def admin_dashboard():
 @bp.route("/expert")
 @role_required("Expert")
 def expert_dashboard():
-    return render_template("expert/dashboard.html", predictions=Prediction.query.order_by(Prediction.id.desc()).all())
+    latest = Prediction.query.order_by(Prediction.id.desc()).limit(50).all()
+    return render_template("expert/dashboard.html", predictions=latest)
+
+
+def _prediction_row(p: Prediction) -> dict:
+    return {
+        "id": p.id,
+        "user": p.user_name,
+        "year": p.year,
+        "rainfall": p.average_rainfall,
+        "pesticides": p.pesticides_tonnes,
+        "temp": p.avg_temp,
+        "area": p.area,
+        "value": p.predicted_value,
+    }
+
+
+@bp.route("/api/stats")
+@login_required
+def api_stats():
+    """Aggregate prediction data for the live expert charts (values in hg/ha)."""
+    if current_user.role not in ("Expert", "Admin"):
+        abort(403)
+    by_area = (
+        db.session.query(Prediction.area, func.count(Prediction.id), func.avg(Prediction.predicted_value))
+        .group_by(Prediction.area)
+        .order_by(func.count(Prediction.id).desc(), Prediction.area)
+        .all()
+    )
+    total = sum(count for _, count, _ in by_area)
+    overall = db.session.query(func.avg(Prediction.predicted_value)).scalar()
+    by_year = (
+        db.session.query(Prediction.year, func.count(Prediction.id))
+        .group_by(Prediction.year)
+        .order_by(Prediction.year)
+        .all()
+    )
+    history = current_app.extensions.get("area_means", {})
+    # What the same districts averaged historically, weighted by how often each was requested.
+    known = [(count, history[area]) for area, count, _ in by_area if area in history]
+    expected = sum(c * h for c, h in known) / sum(c for c, _ in known) if known else None
+    latest = Prediction.query.order_by(Prediction.id.desc()).limit(200).all()
+    by_user = (
+        db.session.query(Prediction.user_name, func.count(Prediction.id))
+        .group_by(Prediction.user_name)
+        .order_by(func.count(Prediction.id).desc(), Prediction.user_name)
+        .limit(10)
+        .all()
+    )
+    return jsonify(
+        total=total,
+        average=float(overall) if overall is not None else None,
+        by_area=[{"area": a, "count": c, "average": float(avg)} for a, c, avg in by_area],
+        by_user=[{"user": u, "count": c} for u, c in by_user],
+        by_year=[{"year": y, "count": c} for y, c in by_year],
+        expected_historical=expected,
+        recent=[_prediction_row(p) for p in latest[:50]],
+        series=[{"id": p.id, "value": p.predicted_value} for p in reversed(latest[:20])],
+        points=[_prediction_row(p) for p in latest],  # newest 200, for scatter plot and histogram
+        historical=current_app.extensions.get("area_means", {}),
+    )
+
+
+@bp.route("/api/admin-stats")
+@role_required("Admin")
+def api_admin_stats():
+    """System overview for the live admin charts."""
+    roles = db.session.query(User.role, func.count(User.id)).group_by(User.role).order_by(User.role).all()
+    per_user = (
+        db.session.query(Prediction.user_name, func.count(Prediction.id))
+        .group_by(Prediction.user_name)
+        .order_by(func.count(Prediction.id).desc(), Prediction.user_name)
+        .limit(10)
+        .all()
+    )
+    by_area = (
+        db.session.query(Prediction.area, func.count(Prediction.id))
+        .group_by(Prediction.area)
+        .order_by(func.count(Prediction.id).desc(), Prediction.area)
+        .all()
+    )
+    recent = Prediction.query.order_by(Prediction.id.desc()).limit(10).all()
+    return jsonify(
+        users=sum(c for _, c in roles),
+        predictions=Prediction.query.count(),
+        by_role=[{"role": r, "count": c} for r, c in roles],
+        per_user=[{"user": u, "count": c} for u, c in per_user],
+        by_area=[{"area": a, "count": c} for a, c in by_area],
+        recent=[_prediction_row(p) for p in recent],
+    )
+
+
+@bp.route("/api/my-stats")
+@role_required("User")
+def api_my_stats():
+    """The signed-in user's own predictions, plus the dataset's historical mean yield per district."""
+    mine = Prediction.query.filter_by(user_id=current_user.id)
+    by_area = (
+        db.session.query(Prediction.area, func.count(Prediction.id))
+        .filter(Prediction.user_id == current_user.id)
+        .group_by(Prediction.area)
+        .order_by(func.count(Prediction.id).desc(), Prediction.area)
+        .all()
+    )
+    latest = mine.order_by(Prediction.id.desc()).limit(20).all()
+    return jsonify(
+        total=sum(c for _, c in by_area),
+        by_area=[{"area": a, "count": c} for a, c in by_area],
+        recent=[_prediction_row(p) for p in reversed(latest[:8])],
+        series=[{"id": p.id, "value": p.predicted_value} for p in reversed(latest)],
+        points=[_prediction_row(p) for p in latest],
+        historical=current_app.extensions.get("area_means", {}),
+    )
 
 
 def _parse_prediction_input(data: dict, areas: list[str]) -> dict:

@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && typeof data.prediction === 'number') {
                 const formatted = Math.round(data.prediction).toLocaleString();
                 show(`Predicted yield: ${formatted} hg/ha (~${(data.prediction / 10000).toFixed(2)} t/ha)`, true);
+                if (window.refreshUserCharts) window.refreshUserCharts();
             } else {
                 show(data.error ?? 'Prediction failed.', false);
             }

@@ -17,6 +17,15 @@ A Flask web app that predicts maize yield (hg/ha) for 15 districts in Zimbabwe f
 | Deployment | Gunicorn, Docker |
 | Packaging | `pyproject.toml`, `src/` layout |
 
+## Live charts
+
+All charts update on their own: the expert and admin pages check for new data every 5 seconds (and pause in background tabs), and the user page refreshes right after each prediction.
+
+- **Expert dashboard:** gauge of predicted vs historical yield; pie, bar and trend charts; a district heat map; predicted vs historical by district; radar profile of the top districts; predictions by input year; yield histogram; predictions per user; scatter plot (switchable between rainfall, temperature and pesticides); a rainfall x temperature x yield bubble chart; a live "this session" chart; and a highlighted activity feed.
+- **Admin dashboard:** user and prediction totals, users by role, most active users, a polar-area chart of predictions by district, and a live feed.
+- **User dashboard:** gauge of your latest prediction vs the district average, rainfall vs yield scatter, comparison with historical averages, your yield trend, and your predictions by district.
+- Charts use [Chart.js](https://www.chartjs.org) (MIT), bundled in `static/vendor/`, so no external CDN is needed.
+
 ## Quick start
 
 ```bash

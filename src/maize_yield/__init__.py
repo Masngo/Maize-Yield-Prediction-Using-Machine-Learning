@@ -36,6 +36,7 @@ def create_app(config: dict | None = None) -> Flask:
         app.logger.warning("No trained model at %s - training one now.", model_path)
         train(app.config["DATA_PATH"], model_path)
     app.extensions["predictor"] = Predictor(model_path)
+    app.extensions["area_means"] = _historical_means(app)
 
     from .routes import bp
 
@@ -49,6 +50,18 @@ def create_app(config: dict | None = None) -> Flask:
 
     _register_cli(app)
     return app
+
+
+def _historical_means(app: Flask) -> dict[str, float]:
+    """Mean observed yield (hg/ha) per district in the training data, for chart comparisons."""
+    from .ml import TARGET, load_data
+
+    try:
+        df = load_data(app.config["DATA_PATH"])
+        return {area: float(v) for area, v in df.groupby("Area")[TARGET].mean().items()}
+    except OSError:
+        app.logger.warning("Training data not found; historical averages unavailable.")
+        return {}
 
 
 def _bootstrap_admin(app: Flask) -> None:

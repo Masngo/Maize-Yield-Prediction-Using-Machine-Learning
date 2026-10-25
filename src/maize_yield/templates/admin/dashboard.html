@@ -3,8 +3,33 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="dashboard-content">
+<div class="dashboard-content" id="admin-dashboard" data-endpoint="{{ url_for('main.api_admin_stats') }}">
     <h2 class="ad-head">Admin Dashboard</h2>
+    <p class="live-status" id="live-status" role="status">Connecting&hellip;</p>
+
+    <div class="stat-cards">
+        <div class="stat-card"><span class="stat-label">Users</span><span class="stat-value" id="stat-users">&ndash;</span></div>
+        <div class="stat-card"><span class="stat-label">Predictions made</span><span class="stat-value" id="stat-predictions">&ndash;</span></div>
+    </div>
+    <div class="chart-grid">
+        <div class="chart-card">
+            <h3>Users by role</h3>
+            <div class="chart-box"><canvas id="chart-roles" aria-label="Pie chart of users by role" role="img"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>Most active users (predictions)</h3>
+            <div class="chart-box"><canvas id="chart-active" aria-label="Bar chart of predictions per user" role="img"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>Predictions by district (polar area)</h3>
+            <div class="chart-box"><canvas id="chart-polar" aria-label="Polar area chart of predictions by district" role="img"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>Latest predictions</h3>
+            <ul id="feed" class="feed feed-compact" aria-live="polite"></ul>
+        </div>
+    </div>
+
     <a href="{{ url_for('main.create_user') }}" class="btn btn-success mb-3">Create User</a>
     <table class="table table-bordered">
         <thead>
@@ -33,4 +58,9 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
 {% endblock %}
