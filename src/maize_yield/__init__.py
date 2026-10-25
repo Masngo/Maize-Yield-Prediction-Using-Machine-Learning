@@ -10,6 +10,7 @@ from flask import Flask
 from .config import Config
 from .extensions import csrf, db, login_manager
 from .ml import Predictor, train
+from .weather import WeatherService
 
 __version__ = "2.0.0"
 
@@ -37,6 +38,8 @@ def create_app(config: dict | None = None) -> Flask:
         train(app.config["DATA_PATH"], model_path)
     app.extensions["predictor"] = Predictor(model_path)
     app.extensions["area_means"] = _historical_means(app)
+    app.extensions["rain_range"] = _rain_range(app)
+    app.extensions["weather"] = WeatherService(fetcher=app.config.get("WEATHER_FETCHER"))
 
     from .routes import bp
 
@@ -62,6 +65,17 @@ def _historical_means(app: Flask) -> dict[str, float]:
     except OSError:
         app.logger.warning("Training data not found; historical averages unavailable.")
         return {}
+
+
+def _rain_range(app: Flask) -> tuple[float, float]:
+    """Typical rainfall span (5th-95th percentile) used for the what-if curve and heat map."""
+    from .ml import load_data
+
+    try:
+        rain = load_data(app.config["DATA_PATH"])["Average_Rainfall_mm_per_year"]
+        return float(rain.quantile(0.05)), float(rain.quantile(0.95))
+    except OSError:
+        return 400.0, 1800.0
 
 
 def _bootstrap_admin(app: Flask) -> None:

@@ -18,6 +18,7 @@ from sqlalchemy import func
 
 from .extensions import db
 from .models import ROLES, Prediction, User
+from .weather import WeatherUnavailable
 
 bp = Blueprint("main", __name__)
 
@@ -245,6 +246,31 @@ def predict():
     )
     db.session.commit()
     return jsonify(prediction=value, unit="hg/ha")
+
+
+@bp.route("/api/preview", methods=["POST"])
+@role_required("User")
+def api_preview():
+    """Live what-if: predictions for the current form values. Nothing is saved."""
+    predictor = current_app.extensions["predictor"]
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify(error="Expected a JSON object."), 400
+    try:
+        values = _parse_prediction_input(data, predictor.areas)
+    except ValueError as exc:
+        return jsonify(error=str(exc)), 400
+    return jsonify(predictor.what_if(**values, rain_range=current_app.extensions["rain_range"]))
+
+
+@bp.route("/api/weather")
+@login_required
+def api_weather():
+    """Current weather for every district (cached; see weather.py)."""
+    try:
+        return jsonify(current_app.extensions["weather"].get())
+    except WeatherUnavailable as exc:
+        return jsonify(error=str(exc)), 503
 
 
 # --- Admin user management -------------------------------------------------

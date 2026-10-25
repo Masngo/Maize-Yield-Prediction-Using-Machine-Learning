@@ -111,6 +111,8 @@
         });
     };
 
+    window.MaizeCharts = { t, el, makeChart, setData, axes, baseOptions, noLegend, palette, GREEN, GOLD, TEXT, HG_PER_T };
+
     /* ---------------- Expert dashboard ---------------- */
     const expert = el('expert-dashboard');
     if (expert) {

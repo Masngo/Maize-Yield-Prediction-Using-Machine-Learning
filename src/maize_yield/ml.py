@@ -138,3 +138,50 @@ class Predictor:
             ]
         )[FEATURES]
         return max(0.0, float(self.pipeline.predict(row)[0]))
+
+    def what_if(
+        self,
+        *,
+        year: int,
+        rainfall: float,
+        pesticides: float,
+        temp: float,
+        area: str,
+        rain_range: tuple[float, float],
+        curve_points: int = 15,
+        heat_levels: int = 5,
+    ) -> dict:
+        """Everything the live predictor panel shows, from ONE batched model call.
+
+        - ``prediction``: the yield for exactly these inputs
+        - ``curve``: yield as rainfall varies (other inputs fixed)
+        - ``by_area``: yield for every district at these inputs
+        - ``heatmap``: yield for every district at several rainfall levels
+        All values are hg/ha.
+        """
+        low, high = rain_range
+        curve_x = [float(v) for v in np.linspace(low, high, curve_points).round(0)]
+        heat_x = [float(v) for v in np.linspace(low, high, heat_levels).round(0)]
+        base = {
+            "Year": year,
+            "Average_Rainfall_mm_per_year": rainfall,
+            "Pesticides_Tonnes": pesticides,
+            "Avg_Temp": temp,
+            "Area": area,
+        }
+        rows = [base]
+        rows += [{**base, "Average_Rainfall_mm_per_year": x} for x in curve_x]
+        rows += [{**base, "Area": a} for a in self.areas]
+        rows += [{**base, "Area": a, "Average_Rainfall_mm_per_year": x} for a in self.areas for x in heat_x]
+
+        values = np.clip(self.pipeline.predict(pd.DataFrame(rows)[FEATURES]), 0, None).astype(float)
+        n_curve, n_areas = len(curve_x), len(self.areas)
+        curve = values[1 : 1 + n_curve]
+        by_area = values[1 + n_curve : 1 + n_curve + n_areas]
+        grid = values[1 + n_curve + n_areas :].reshape(n_areas, len(heat_x))
+        return {
+            "prediction": float(values[0]),
+            "curve": {"x": curve_x, "y": curve.tolist()},
+            "by_area": [{"area": a, "value": float(v)} for a, v in zip(self.areas, by_area, strict=True)],
+            "heatmap": {"areas": list(self.areas), "rainfall": heat_x, "values": grid.tolist()},
+        }

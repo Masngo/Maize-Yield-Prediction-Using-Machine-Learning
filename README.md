@@ -26,6 +26,13 @@ All charts update on their own: the expert and admin pages check for new data ev
 - **User dashboard:** gauge of your latest prediction vs the district average, rainfall vs yield scatter, comparison with historical averages, your yield trend, and your predictions by district.
 - Charts use [Chart.js](https://www.chartjs.org) (MIT), bundled in `static/vendor/`, so no external CDN is needed.
 
+## Live predictions and weather
+
+- **Live what-if (user dashboard):** as you type, the page asks the model for a fresh estimate (nothing is saved until you press Predict) and redraws a line graph of yield against rainfall, a bar chart of the same inputs in every district, and a district x rainfall heat map.
+- **Live weather:** current temperature, humidity, wind and rain for every district, shown as a temperature heat map (click a tile to select that district) and, on the expert dashboard, a coordinate-based weather map. It refreshes every minute.
+- Weather comes from [Open-Meteo](https://open-meteo.com/) (free for non-commercial use, no API key). The server calls it once per 10 minutes for all districts and serves the cached reading to everyone; if the service is unreachable the last reading is shown and marked. District coordinates in `src/maize_yield/weather.py` are approximate centres.
+- Live weather is context only: the model is trained on yearly averages, so today's weather is not a model input.
+
 ## Quick start
 
 ```bash
