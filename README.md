@@ -1,7 +1,17 @@
 # Maize Yield Prediction (Zimbabwe)
 
 [![CI](https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/actions/workflows/ci.yml/badge.svg)](https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
+[![License](https://img.shields.io/github/license/Masngo/Maize-Yield-Prediction-Using-Machine-Learning?style=flat-square)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/Masngo/Maize-Yield-Prediction-Using-Machine-Learning?style=flat-square)](https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning/commits/main)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json&style=flat-square)](https://github.com/astral-sh/ruff)
+
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB?style=flat-square&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3-000000?style=flat-square&logo=flask&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Chart.js-live%20charts-FF6384?style=flat-square&logo=chartdotjs&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Masngo/Maize-Yield-Prediction-Using-Machine-Learning)
 
 A Flask web app that predicts maize yield (hg/ha) for 15 districts in Zimbabwe from rainfall, temperature, pesticide use, year and district. It has three roles: **Users** request predictions, **Experts** review every prediction made, and **Admins** manage accounts.
 
