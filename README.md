@@ -31,6 +31,9 @@ All charts update on their own: the expert and admin pages check for new data ev
 - **Live what-if (user dashboard):** as you type, the page asks the model for a fresh estimate (nothing is saved until you press Predict) and redraws a line graph of yield against rainfall, a bar chart of the same inputs in every district, and a district x rainfall heat map.
 - **Live weather:** current temperature, humidity, wind and rain for every district, shown as a temperature heat map (click a tile to select that district) and, on the expert dashboard, a coordinate-based weather map. It refreshes every minute.
 - Weather comes from [Open-Meteo](https://open-meteo.com/) (free for non-commercial use, no API key). The server calls it once per 10 minutes for all districts and serves the cached reading to everyone; if the service is unreachable the last reading is shown and marked. District coordinates in `src/maize_yield/weather.py` are approximate centres.
+- **Humidity, wind and pressure:** each district shows humidity, wind speed, direction and gusts, air pressure, and wind pressure (the force of the wind on a surface, 1/2 x air density x speed squared, in pascals), with a selector that recolours the heat map, bar chart and weather map for any of them.
+- **Live date and time:** the header shows Zimbabwe time (CAT) ticking every second, with the day number of the year.
+- **Every day of the year:** a calendar heat map with one cell per day for the chosen district (temperature, rainfall, humidity, pressure, wind or wind pressure). Past days come from the Open-Meteo archive, the next ~2 weeks from the forecast, today is outlined, and hovering a day shows all its measurements.
 - Live weather is context only: the model is trained on yearly averages, so today's weather is not a model input.
 
 ## Quick start

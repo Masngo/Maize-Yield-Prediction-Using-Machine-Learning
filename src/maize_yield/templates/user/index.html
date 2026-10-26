@@ -67,11 +67,47 @@
                 <div id="wx-selected" class="wx-selected">&ndash;</div>
             </div>
             <div class="chart-card chart-wide">
-                <h3>Temperature heat map across districts (&deg;C)</h3>
-                <div id="wx-tiles" class="heatmap wx-tiles" aria-label="Current temperature by district"></div>
+                <h3>Heat map across districts: <select id="wx-metric" class="inline-select" aria-label="Weather measure to show">
+                        <option value="temp">temperature (&deg;C)</option>
+                        <option value="humidity">humidity (%)</option>
+                        <option value="pressure">air pressure (hPa)</option>
+                        <option value="wind">wind speed (km/h)</option>
+                        <option value="wind_pressure">wind pressure (Pa)</option>
+                        <option value="rain">rain now (mm)</option>
+                    </select></h3>
+                <div id="wx-tiles" class="heatmap wx-tiles" aria-label="Current weather by district"></div>
                 <p class="chart-note">Click a district to select it in the form. Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>.
-                Live weather is shown for context only &ndash; the model uses yearly averages, so today's weather is not an input.</p>
+                Live weather is shown for context only &ndash; the model uses yearly averages, so today's weather is not an input. Wind pressure = &frac12; &times; air density &times; wind speed&sup2;.</p>
             </div>
+            <div class="chart-card chart-wide">
+                <h3>Compare districts</h3>
+                <div class="chart-box"><canvas id="wx-bars" aria-label="Bar chart of the selected weather measure in every district" role="img"></canvas></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="year-calendar" data-endpoint="{{ url_for('main.api_weather_year') }}">
+        <h3 class="section-head">Every day of the year <span class="live-pill" id="cal-status">loading&hellip;</span></h3>
+        <div class="chart-card">
+            <div class="cal-controls">
+                <label>Show <select id="cal-metric" class="inline-select" aria-label="Weather measure to show on the calendar">
+                        <option value="temp">temperature (&deg;C)</option>
+                        <option value="rain">rainfall (mm)</option>
+                        <option value="humidity">humidity (%)</option>
+                        <option value="pressure">air pressure (hPa)</option>
+                        <option value="wind">wind speed (km/h)</option>
+                        <option value="wind_pressure">wind pressure (Pa)</option>
+                    </select></label>
+                <span class="chart-note">for the district selected in the form above</span>
+            </div>
+            <div class="stat-cards" id="cal-stats"></div>
+            <div class="table-scroll"><div class="cal-grid" id="cal-grid" aria-label="Calendar heat map with one cell per day of the year"></div></div>
+            <div class="cal-legend" id="cal-legend"></div>
+            <p class="cal-detail" id="cal-detail" role="status" aria-live="polite"></p>
+            <p class="chart-note">Solid cells are observed days (the latest week or so is a model analysis); faded dashed cells are the forecast;
+            grey cells have no data yet. Today is outlined. Hover or click a day for all its measurements.
+            Daily values are averages of hourly readings (rain is the day&rsquo;s total).
+            Data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>.</p>
         </div>
     </section>
 
@@ -112,4 +148,5 @@
 <script src="{{ url_for('static', filename='charts.js') }}"></script>
 <script src="{{ url_for('static', filename='live.js') }}"></script>
 <script src="{{ url_for('static', filename='weather.js') }}"></script>
+<script src="{{ url_for('static', filename='calendar.js') }}"></script>
 {% endblock %}

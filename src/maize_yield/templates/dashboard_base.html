@@ -16,6 +16,11 @@
 <body>
     <div class="navbar">
         <a href="#">Home</a>
+        <div class="live-clock" id="live-clock" role="timer" aria-label="Current date and time in Zimbabwe">
+            <span id="clock-date"></span>
+            <strong id="clock-time"></strong>
+            <small id="clock-day"></small>
+        </div>
         <a href="{{ url_for('main.logout') }}">Logout</a>
     </div>
     <div class="dashboard-container">
@@ -25,6 +30,7 @@
         {% block content %}{% endblock %}
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='clock.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

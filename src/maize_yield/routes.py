@@ -79,7 +79,8 @@ def admin_dashboard():
 @role_required("Expert")
 def expert_dashboard():
     latest = Prediction.query.order_by(Prediction.id.desc()).limit(50).all()
-    return render_template("expert/dashboard.html", predictions=latest)
+    areas = current_app.extensions["predictor"].areas
+    return render_template("expert/dashboard.html", predictions=latest, areas=areas)
 
 
 def _prediction_row(p: Prediction) -> dict:
@@ -269,6 +270,19 @@ def api_weather():
     """Current weather for every district (cached; see weather.py)."""
     try:
         return jsonify(current_app.extensions["weather"].get())
+    except WeatherUnavailable as exc:
+        return jsonify(error=str(exc)), 503
+
+
+@bp.route("/api/weather/year")
+@login_required
+def api_weather_year():
+    """Day-by-day weather for the whole current year in one district (for the calendar heat map)."""
+    area = request.args.get("area", "")
+    try:
+        return jsonify(current_app.extensions["weather_year"].get(area))
+    except KeyError:
+        return jsonify(error="Unknown area."), 400
     except WeatherUnavailable as exc:
         return jsonify(error=str(exc)), 503
 

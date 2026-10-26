@@ -1,28 +1,57 @@
 /* Live weather: polls /api/weather every minute (the server caches Open-Meteo for 10 minutes).
-   - User dashboard: details for the selected district + temperature heat-map tiles (click to select).
-   - Expert dashboard: temperature heat-map tiles + a coordinate "weather map" bubble chart. */
+   Shows humidity, wind (speed, direction, gusts), air pressure and wind pressure as well as temperature and rain.
+   - User dashboard: details for the selected district + heat-map tiles and bar chart (click a tile to select it).
+   - Expert dashboard: tiles + bar chart + a coordinate "weather map".
+   A metric selector (#wx-metric) switches what the tiles, bars and map show. */
 (() => {
     const M = window.MaizeCharts;
     const root = document.getElementById('weather-panel') || document.getElementById('weather');
-    if (!root || !M) return;
+    if (!M || !root) return;
 
-    const { el, makeChart, setData, TEXT } = M;
+    const { el, makeChart, setData, TEXT, axes, noLegend } = M;
     const POLL_MS = 60000;
+
+    /* hsl colour ramps: k = 0 (lowest) ... 1 (highest) */
+    const METRICS = {
+        temp: { label: 'Temperature', unit: '\u00b0C', digits: 1, colour: (k) => `hsl(${210 - k * 195} 65% 42%)` },
+        humidity: { label: 'Humidity', unit: '%', digits: 0, colour: (k) => `hsl(195 70% ${72 - k * 42}%)` },
+        pressure: { label: 'Air pressure', unit: 'hPa', digits: 1, colour: (k) => `hsl(270 45% ${74 - k * 44}%)` },
+        wind: { label: 'Wind speed', unit: 'km/h', digits: 0, colour: (k) => `hsl(170 55% ${72 - k * 44}%)` },
+        wind_pressure: { label: 'Wind pressure', unit: 'Pa', digits: 1, colour: (k) => `hsl(28 70% ${74 - k * 42}%)` },
+        rain: { label: 'Rain', unit: 'mm', digits: 1, colour: (k) => `hsl(220 70% ${78 - k * 46}%)` },
+    };
+    const num = (v, digits = 1) => (v == null ? '\u2013' : Number(v).toFixed(digits));
+    const scale = (values) => {
+        const clean = values.filter((v) => v != null);
+        return { lo: Math.min(...clean), hi: Math.max(...clean) };
+    };
+    const ramp = (metric, value, lo, hi) => {
+        if (value == null) return { background: '#999', text: '#fff' };
+        const k = hi > lo ? (value - lo) / (hi - lo) : 0.5;
+        const background = METRICS[metric].colour(k);
+        const lightness = Number(/(\d+(?:\.\d+)?)%\)$/.exec(background)?.[1] ?? 40);
+        return { background, text: lightness > 58 ? '#10331a' : '#fff', k };
+    };
+    window.MaizeWeather = { METRICS, ramp, scale, num };   // shared with calendar.js
+
     const tilesBox = el('wx-tiles');
     const statusPill = el('wx-status');
     const selectedBox = el('wx-selected');
     const districtLabel = el('wx-district');
     const areaSelect = el('Area');
+    const metricSelect = el('wx-metric');
     let latest = null;
+    const metric = () => (metricSelect ? metricSelect.value : 'temp');
+    const selectedArea = () => (areaSelect ? areaSelect.value : null);
+    const fmt = (v, m) => (v == null ? '\u2013' : `${num(v, METRICS[m].digits)}`);
 
-    /* cold (blue) -> hot (red-orange) */
-    const heat = (temp, lo, hi) => {
-        const k = hi > lo ? (temp - lo) / (hi - lo) : 0.5;
-        return { colour: `hsl(${210 - k * 195} 65% 42%)`, k };
-    };
-    const num = (v, digits = 1) => (v == null ? '\u2013' : Number(v).toFixed(digits));
+    /* Bar chart of the chosen metric across districts */
+    const bars = makeChart('wx-bars', {
+        type: 'bar', data: { labels: [], datasets: [] },
+        options: { ...noLegend, animation: { duration: 250 }, scales: axes('') },
+    });
 
-    /* Bubble "map": x = longitude, y = latitude, labels drawn next to each bubble. */
+    /* Bubble "map": x = longitude, y = latitude, names drawn above the bubbles. */
     const labelPlugin = {
         id: 'districtLabels',
         afterDatasetsDraw(chart) {
@@ -51,30 +80,29 @@
                 legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: (c) => `${c.raw.area}: ${num(c.raw.temp)} \u00b0C, ${c.raw.summary}, wind ${num(c.raw.wind, 0)} km/h`,
+                        label: (c) => `${c.raw.area}: ${c.raw.shown} ${METRICS[metric()].unit}, ${c.raw.summary}, wind ${num(c.raw.wind, 0)} km/h`,
                     },
                 },
             },
         },
     });
 
-    const selectedArea = () => (areaSelect ? areaSelect.value : null);
+    const item = (value, label) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'wx-item';
+        const big = document.createElement('span');
+        big.textContent = value;
+        const small = document.createElement('small');
+        small.textContent = label;
+        wrap.append(big, small);
+        return wrap;
+    };
 
     const renderSelected = () => {
         if (!latest || !selectedBox) return;
         const d = latest.districts.find((x) => x.area === selectedArea());
         if (districtLabel && d) districtLabel.textContent = d.area;
         if (!d) { selectedBox.textContent = '\u2013'; return; }
-        const item = (value, label) => {
-            const wrap = document.createElement('div');
-            wrap.className = 'wx-item';
-            const big = document.createElement('span');
-            big.textContent = value;
-            const small = document.createElement('small');
-            small.textContent = label;
-            wrap.append(big, small);
-            return wrap;
-        };
         const main = document.createElement('div');
         main.className = 'wx-item';
         const big = document.createElement('span');
@@ -83,35 +111,42 @@
         const sm = document.createElement('small');
         sm.textContent = d.summary;
         main.append(big, sm);
-        selectedBox.replaceChildren(main, item(`${num(d.humidity, 0)} %`, 'humidity'), item(`${num(d.wind, 0)} km/h`, 'wind'),
-            item(`${num(d.rain)} mm`, 'rain right now'));
+        const wind = d.wind == null ? '\u2013' : `${num(d.wind, 0)} km/h ${d.wind_dir ?? ''}`.trim();
+        selectedBox.replaceChildren(
+            main,
+            item(`${num(d.humidity, 0)} %`, 'humidity'),
+            item(wind, d.gust == null ? 'wind' : `wind (gusts ${num(d.gust, 0)} km/h)`),
+            item(`${num(d.pressure)} hPa`, 'air pressure'),
+            item(`${num(d.wind_pressure)} Pa`, 'wind pressure'),
+            item(`${num(d.rain)} mm`, 'rain right now'),
+        );
     };
 
     const renderTiles = () => {
         if (!latest || !tilesBox) return;
-        const temps = latest.districts.map((d) => d.temp).filter((v) => v != null);
-        const lo = Math.min(...temps);
-        const hi = Math.max(...temps);
+        const m = metric();
+        const { lo, hi } = scale(latest.districts.map((d) => d[m]));
         const fragment = document.createDocumentFragment();
         latest.districts.forEach((d) => {
+            const colours = ramp(m, d[m], lo, hi);
             const tile = document.createElement('div');
             tile.className = 'tile' + (d.area === selectedArea() ? ' selected' : '');
-            tile.style.backgroundColor = d.temp == null ? '#999' : heat(d.temp, lo, hi).colour;
-            tile.style.color = '#fff';
+            tile.style.backgroundColor = colours.background;
+            tile.style.color = colours.text;
             const name = document.createElement('span');
             name.className = 'tile-name';
             name.textContent = d.area;
             const value = document.createElement('span');
             value.className = 'tile-value';
-            value.textContent = d.temp == null ? '\u2013' : `${num(d.temp)}\u00b0`;
+            value.textContent = `${fmt(d[m], m)} ${d[m] == null ? '' : METRICS[m].unit}`.trim();
             const detail = document.createElement('span');
             detail.className = 'tile-count';
-            detail.textContent = `${d.summary} \u00b7 ${num(d.humidity, 0)}%`;
+            detail.textContent = d.summary;
             tile.append(name, value, detail);
             if (areaSelect) {
                 tile.addEventListener('click', () => {
                     areaSelect.value = d.area;
-                    areaSelect.dispatchEvent(new Event('change', { bubbles: true }));   // also refreshes the live what-if
+                    areaSelect.dispatchEvent(new Event('change', { bubbles: true }));   // also refreshes live what-if + calendar
                 });
             }
             fragment.appendChild(tile);
@@ -119,20 +154,38 @@
         tilesBox.replaceChildren(fragment);
     };
 
+    const renderBars = () => {
+        if (!latest || !bars) return;
+        const m = metric();
+        const { lo, hi } = scale(latest.districts.map((d) => d[m]));
+        const rows = [...latest.districts].sort((a, b) => (b[m] ?? -Infinity) - (a[m] ?? -Infinity));
+        bars.options.scales.y.title = { display: true, text: `${METRICS[m].label} (${METRICS[m].unit})`, color: TEXT };
+        // Temperature and pressure vary in a narrow band, so start the axis a little below the lowest bar
+        // (rather than at 0) while still keeping every bar visible; other measures start at zero.
+        const narrow = m === 'pressure' || m === 'temp';
+        bars.options.scales.y.beginAtZero = !narrow;
+        bars.options.scales.y.min = narrow && Number.isFinite(lo) ? Math.floor(lo - (hi - lo) * 0.6) : undefined;
+        setData(bars, rows.map((d) => d.area), [{
+            data: rows.map((d) => (d[m] == null ? null : Number(num(d[m], METRICS[m].digits)))),
+            backgroundColor: rows.map((d) => ramp(m, d[m], lo, hi).background),
+        }]);
+    };
+
     const renderMap = () => {
         if (!latest || !map) return;
-        const temps = latest.districts.map((d) => d.temp).filter((v) => v != null);
-        const lo = Math.min(...temps);
-        const hi = Math.max(...temps);
+        const m = metric();
+        const { lo, hi } = scale(latest.districts.map((d) => d[m]));
         setData(map, null, [{
             data: latest.districts.map((d) => ({
                 x: d.lon, y: d.lat, r: Math.max(7, Math.min(20, 6 + (d.wind ?? 0) / 2)),
-                area: d.area, temp: d.temp, wind: d.wind, summary: d.summary,
+                area: d.area, shown: fmt(d[m], m), wind: d.wind, summary: d.summary,
             })),
-            backgroundColor: latest.districts.map((d) => (d.temp == null ? '#999' : heat(d.temp, lo, hi).colour)),
+            backgroundColor: latest.districts.map((d) => ramp(m, d[m], lo, hi).background),
             borderColor: '#fff',
         }]);
     };
+
+    const renderAll = () => { renderTiles(); renderSelected(); renderBars(); renderMap(); };
 
     const setStatus = (text, cls) => {
         if (!statusPill) return;
@@ -146,9 +199,7 @@
             const data = await response.json();
             if (!response.ok) throw new Error(data.error ?? response.status);
             latest = data;
-            renderTiles();
-            renderSelected();
-            renderMap();
+            renderAll();
             const time = new Date(data.updated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             setStatus(data.stale ? `last reading ${time} (service unreachable)` : `updated ${time}`, data.stale ? 'stale' : '');
         } catch {
@@ -158,6 +209,7 @@
     };
 
     if (areaSelect) areaSelect.addEventListener('change', () => { renderSelected(); renderTiles(); });
+    if (metricSelect) metricSelect.addEventListener('change', renderAll);
 
     refresh();
     let timer = setInterval(refresh, POLL_MS);

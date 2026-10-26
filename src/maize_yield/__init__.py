@@ -10,7 +10,7 @@ from flask import Flask
 from .config import Config
 from .extensions import csrf, db, login_manager
 from .ml import Predictor, train
-from .weather import WeatherService
+from .weather import WeatherService, YearService
 
 __version__ = "2.0.0"
 
@@ -40,6 +40,11 @@ def create_app(config: dict | None = None) -> Flask:
     app.extensions["area_means"] = _historical_means(app)
     app.extensions["rain_range"] = _rain_range(app)
     app.extensions["weather"] = WeatherService(fetcher=app.config.get("WEATHER_FETCHER"))
+    app.extensions["weather_year"] = YearService(
+        archive=app.config.get("WEATHER_ARCHIVE_FETCHER"),
+        forecast=app.config.get("WEATHER_FORECAST_FETCHER"),
+        clock=app.config.get("WEATHER_CLOCK"),
+    )
 
     from .routes import bp
 

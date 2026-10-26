@@ -233,3 +233,25 @@ th{
 .wx-selected .wx-big { font-size: 2rem; font-weight: bold; }
 .wx-selected .wx-item { display: flex; flex-direction: column; }
 .wx-selected .wx-item small { color: #4a6b1f; }
+
+/* ---- live clock ---- */
+.live-clock { display: flex; align-items: baseline; gap: 10px; color: #fff; font-size: 0.9rem; white-space: nowrap; }
+.live-clock strong { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.live-clock small { opacity: 0.9; }
+@media (max-width: 720px) { .live-clock small, .live-clock #clock-date { display: none; } }
+
+/* ---- year calendar ---- */
+.cal-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; color: #155724; font-weight: bold; }
+.cal-grid { display: grid; grid-template-columns: 34px repeat(31, minmax(16px, 1fr)); gap: 2px; min-width: 640px; }
+.cal-label, .cal-head { font-size: 0.7rem; color: #4a6b1f; align-self: center; text-align: center; }
+.cal-label { text-align: left; font-weight: bold; }
+.cal-day { aspect-ratio: 1; min-height: 16px; border: 1px solid transparent; border-radius: 3px; padding: 0; cursor: pointer; background: #e3e6dc; }
+.cal-day.blank { visibility: hidden; }
+.cal-day.nodata { background: #ececec; cursor: default; }
+.cal-day.forecast { opacity: 0.6; border: 1px dashed #4a6b1f; }
+.cal-day.today { outline: 3px solid #c9a227; outline-offset: 1px; position: relative; z-index: 1; }
+.cal-day:hover:not(.blank) { transform: scale(1.25); z-index: 2; }
+.cal-legend { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; font-size: 0.8rem; color: #155724; }
+.cal-ramp { flex: 0 1 240px; height: 10px; border-radius: 5px; }
+.cal-detail { min-height: 1.4em; margin: 6px 0; color: #155724; font-weight: bold; font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) { .cal-day:hover:not(.blank) { transform: none; } }
