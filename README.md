@@ -5,7 +5,30 @@
 
 A Flask web app that predicts maize yield (hg/ha) for 15 districts in Zimbabwe from rainfall, temperature, pesticide use, year and district. It has three roles: **Users** request predictions, **Experts** review every prediction made, and **Admins** manage accounts.
 
-![Login](docs/screenshots/GUI-%20login.PNG)
+## Screenshots
+
+### Sign in
+![Login page](docs/screenshots/GUI-%20login.PNG)
+
+### User dashboard: make a prediction
+Enter the year, rainfall, pesticide use, temperature and district. A live estimate and what-if charts update as you type, and **Predict** saves the result.
+
+![User dashboard with the prediction form](docs/screenshots/user-dashboard.jpg)
+
+### Expert dashboard: live analysis of every prediction
+Summary cards, a gauge comparing predicted yield with each district's historical average, charts by district, and live weather. It refreshes every few seconds.
+
+![Expert dashboard with gauge and district chart](docs/screenshots/expert-dashboard.jpg)
+
+### Admin dashboard: users and activity
+User and prediction totals, users by role, the most active users, predictions by district and a live feed of the latest predictions, above the user management table.
+
+![Admin dashboard with user and prediction charts](docs/screenshots/admin-dashboard.jpg)
+
+### Every day of the year: weather calendar
+One cell per day for the chosen district, coloured by temperature (or rainfall, humidity, pressure, wind). Today is outlined, forecast days are faded, and year-to-date statistics sit above the grid.
+
+![Year calendar heat map of daily temperature](docs/screenshots/year-calendar.jpg)
 
 ## Tech stack
 
